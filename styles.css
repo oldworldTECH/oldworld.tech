@@ -3,3 +3,8 @@ h1 {
   font-size: 32px;
   color: #4af626;
 }
+body {
+  font-family: "Space Mono", monospace;
+  background-color: #000;
+  color: #4af626;
+}
