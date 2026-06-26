@@ -1,0 +1,100 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content={description} />
+  <title>{title} // oldworld.tech</title>
+  <style is:global>
+    /* "Old World Tech" Design System Tokens */
+    :root {
+      --bg: #121212;
+      --text-bone: #E5E5E5;
+      --accent-amber: #FFB000;
+      --accent-green: #33FF33;
+      --border-rigid: #2A2A2A;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg);
+      color: var(--text-bone);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    h1, h2, h3, nav, .meta-text {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* Minimalist Rigid Terminal Frame Layout */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      border: 1px solid var(--border-rigid);
+      background: #161616;
+    }
+    
+    header.site-header {
+      border-bottom: 1px solid var(--border-rigid);
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header.site-header .logo a {
+      color: var(--accent-amber);
+      text-decoration: none;
+      font-size: 1.1rem;
+    }
+
+    nav a {
+      color: var(--text-bone);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    nav a:hover {
+      color: var(--accent-green);
+    }
+
+    main { padding: 2rem 1.5rem; }
+
+    footer {
+      border-top: 1px solid var(--border-rigid);
+      padding: 1rem 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="site-header">
+      <div class="logo"><a href="/">OLDWORLD.TECH //</a></div>
+      <nav><a href="/">[LOGS]</a></nav>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer><span>SYSTEM: ONLINE // REF_TIME: 2026</span></footer>
+  </div>
+</body>
+</html>

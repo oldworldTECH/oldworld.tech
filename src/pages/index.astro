@@ -1,0 +1,157 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Query collections database and sort logs by date descending
+const allLogs = (await getCollection('logs')).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<BaseLayout title="Index // Core Engineering Logs">
+  <div class="directory-manifest">
+    <div class="manifest-header">
+      <h2>SYSTEM LOGS MANIFEST</h2>
+      <p class="subtitle">Select payload node path for edge transmission:</p>
+    </div>
+    
+    <div class="log-grid">
+      <div class="grid-header-row">
+        <span>[DATE]</span>
+        <span>[RESOURCE TITLE]</span>
+        <span class="status-col">[STATUS]</span>
+      </div>
+
+      {allLogs.map(log => (
+        <a href={`/logs/${log.id}`} class="log-row-link">
+          <span class="log-date">{log.data.pubDate.toISOString().split('T')[0]}</span>
+          <span class="log-name">{log.data.title}</span>
+          <span class="log-status">[{log.data.status.toUpperCase()}]</span>
+        </a>
+      ))}
+
+      {allLogs.length === 0 && (
+        <div class="empty-state">
+          <span>NO COMPILATION RECORDS LOCATED IN ./src/content/logs/</span>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .directory-manifest {
+    animation: emit 0.15s ease-out;
+  }
+  
+  .manifest-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .directory-manifest h2 {
+    color: var(--accent-amber); /* Amber tone signature */
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitle {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: #666;
+    margin-top: 0.25rem;
+  }
+
+  /* Rigid Grid Architecture */
+  .log-grid {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-rigid); /* 1px line restriction styling */
+    background: #131313;
+  }
+
+  .grid-header-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 100px;
+    padding: 0.5rem 1rem;
+    background: #1a1a1a;
+    border-bottom: 1px solid var(--border-rigid);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--accent-green); /* Phosphor Green indicator metadata */
+    letter-spacing: 0.5px;
+  }
+
+  .log-row-link {
+    display: grid;
+    grid-template-columns: 110px 1fr 100px;
+    padding: 0.85rem 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: var(--text-bone); /* Bone typography */
+    border-bottom: 1px solid var(--border-rigid);
+    transition: background 0.1s ease, color 0.1s ease;
+    align-items: center;
+  }
+
+  .log-row-link:last-child {
+    border-bottom: none;
+  }
+
+  /* Interactive States */
+  .log-row-link:hover {
+    background: #1c1c1c;
+    color: var(--accent-green);
+  }
+
+  .log-date {
+    color: #555;
+    font-size: 0.85rem;
+  }
+
+  .log-name {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    padding-right: 1rem;
+  }
+
+  .log-status {
+    text-align: right;
+    font-size: 0.75rem;
+    color: var(--accent-amber);
+  }
+
+  .status-col {
+    text-align: right;
+  }
+
+  .empty-state {
+    padding: 2rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: #444;
+  }
+
+  /* System Animation Reset */
+  @keyframes emit {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Responsive Terminal Breakpoint */
+  @media (max-width: 600px) {
+    .grid-header-row {
+      display: none; /* Drop descriptive row headers on small viewports */
+    }
+    .log-row-link {
+      grid-template-columns: 1fr;
+      gap: 0.35rem;
+      padding: 1rem;
+    }
+    .log-status {
+      text-align: left;
+    }
+  }
+</style>

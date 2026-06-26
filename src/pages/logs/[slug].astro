@@ -1,0 +1,89 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const logEntries = await getCollection('logs');
+  return logEntries.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <div class="log-meta">
+    <span>[STATUS]: <span class="status-val">{entry.data.status.toUpperCase()}</span></span>
+    <span>[DATE]: {entry.data.pubDate.toISOString().split('T')[0]}</span>
+  </div>
+  
+  <h1 class="log-title">{entry.data.title}</h1>
+  <hr class="log-divider" />
+
+  <article class="prose-content">
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .log-meta {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-green);
+    margin-bottom: 0.5rem;
+    display: flex;
+    gap: 1.5rem;
+  }
+  .status-val { color: var(--accent-amber); }
+  .log-title {
+    color: #FFF;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: var(--font-mono);
+  }
+  .log-divider {
+    border: 0;
+    border-top: 1px solid var(--border-rigid);
+    margin-bottom: 2rem;
+  }
+
+  /* Target compiled markdown elements natively */
+  .prose-content :global(h2) {
+    font-family: var(--font-mono);
+    color: var(--accent-amber);
+    font-size: 1.2rem;
+    margin: 2rem 0 0.75rem 0;
+  }
+  .prose-content :global(h3) {
+    font-family: var(--font-mono);
+    color: var(--text-bone);
+    font-size: 1.05rem;
+    margin: 1.5rem 0 0.5rem 0;
+  }
+  .prose-content :global(p) { margin-bottom: 1rem; color: #CCC; font-size: 0.95rem; }
+  .prose-content :global(ol) { margin: 0 0 1rem 1.25rem; color: #CCC; font-size: 0.95rem; }
+  .prose-content :global(li) { margin-bottom: 0.5rem; }
+  
+  /* High-Contrast Rigid System Tables */
+  .prose-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    margin: 1.5rem 0;
+  }
+  .prose-content :global(th) {
+    background: #1C1C1C;
+    border: 1px solid var(--border-rigid);
+    padding: 0.6rem;
+    color: var(--accent-green);
+    text-align: left;
+  }
+  .prose-content :global(td) {
+    border: 1px solid var(--border-rigid);
+    padding: 0.6rem;
+  }
+</style>

@@ -1,0 +1,48 @@
+name: Deploy Astro Engine to GitHub Pages
+
+on:
+  push:
+    branches: [ main ] # Change to master if your primary branch uses legacy naming
+
+# Explicitly scope security permissions for the deployment token execution loop
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent deployment race conditions by cancelling concurrent runs
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Tree
+        uses: actions/checkout@v4
+
+      - name: Initialize Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22 # Explicit deployment runtime synchronization
+          cache: 'npm'
+
+      - name: Clean Dependency Tree Ingestion
+        run: npm ci
+
+      - name: Compile Static SSG Distribution Assets
+        run: npm run build
+
+  # Separate verification step ensuring public/CNAME bypasses compile mutations
+      - name: Upload Static Build Artifacts
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Transmit Payload to GitHub Pages Origin
+        id: deployment
+        uses: actions/deploy-pages@v4
