@@ -1,0 +1,10 @@
+# Normalize to LF in the repo regardless of what the checkout OS does.
+# Added after a Windows -> WSL copy landed CRLF into tracked source files.
+* text=auto eol=lf
+
+# Binary assets: never touch.
+*.ico  binary
+*.woff binary
+*.woff2 binary
+*.png  binary
+*.jpg  binary

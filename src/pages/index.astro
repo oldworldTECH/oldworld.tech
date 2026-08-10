@@ -1,29 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPublishedLogs } from '../lib/logs';
 
-// Query collections database and sort logs by date descending
-const allLogs = (await getCollection('logs')).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
-);
+const allLogs = await getPublishedLogs();
 ---
 
-<BaseLayout title="Index // Core Engineering Logs">
+<BaseLayout title="Index">
   <div class="directory-manifest">
     <div class="manifest-header">
-      <h2>SYSTEM LOGS MANIFEST</h2>
-      <p class="subtitle">Select payload node path for edge transmission:</p>
+      <h2>LOG INDEX</h2>
+      <p class="subtitle">Infrastructure and homelab writeups, newest first.</p>
     </div>
-    
+
     <div class="log-grid">
       <div class="grid-header-row">
         <span>[DATE]</span>
-        <span>[RESOURCE TITLE]</span>
+        <span>[TITLE]</span>
         <span class="status-col">[STATUS]</span>
       </div>
 
       {allLogs.map(log => (
-        <a href={`/logs/${log.id}`} class="log-row-link">
+        <a href={`/logs/${log.data.slug}`} class="log-row-link">
           <span class="log-date">{log.data.pubDate.toISOString().split('T')[0]}</span>
           <span class="log-name">{log.data.title}</span>
           <span class="log-status">[{log.data.status.toUpperCase()}]</span>
@@ -32,7 +29,7 @@ const allLogs = (await getCollection('logs')).sort(
 
       {allLogs.length === 0 && (
         <div class="empty-state">
-          <span>NO COMPILATION RECORDS LOCATED IN ./src/content/logs/</span>
+          <span>No entries in ./src/content/logs/</span>
         </div>
       )}
     </div>

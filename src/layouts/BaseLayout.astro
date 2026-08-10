@@ -1,10 +1,30 @@
 ---
+import '@fontsource/jetbrains-mono/latin-400.css';
+import '@fontsource/jetbrains-mono/latin-600.css';
+
 interface Props {
   title: string;
   description?: string;
+  ogType?: 'website' | 'article';
+  pubDate?: Date;
+  updatedDate?: Date;
 }
 
-const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = Astro.props;
+const {
+  title,
+  description = 'IT infrastructure and homelab engineering logs.',
+  ogType = 'website',
+  pubDate,
+  updatedDate,
+} = Astro.props;
+
+// build.format: 'file' makes Astro.url.pathname end in .html during the build,
+// but Pages serves those paths without the extension. Strip it so the canonical
+// and og:url match the URL that actually resolves.
+const canonicalPath = Astro.url.pathname.replace(/(?:index)?\.html$/, '') || '/';
+const canonical = new URL(canonicalPath, Astro.site);
+const rssHref = new URL('rss.xml', Astro.site);
+const buildYear = new Date().getFullYear();
 ---
 
 <!DOCTYPE html>
@@ -12,8 +32,25 @@ const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content={description} />
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'none'; style-src 'self'; font-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'"
+  />
   <title>{title} // oldworld.tech</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="alternate" type="application/rss+xml" title="oldworld.tech" href={rssHref} />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+  <meta property="og:type" content={ogType} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:site_name" content="oldworld.tech" />
+  {pubDate && <meta property="article:published_time" content={pubDate.toISOString()} />}
+  {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+  <meta name="twitter:card" content="summary" />
+
   <style is:global>
     /* "Old World Tech" Design System Tokens */
     :root {
@@ -27,7 +64,7 @@ const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = 
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
       background-color: var(--bg);
       color: var(--text-bone);
@@ -48,13 +85,14 @@ const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = 
       border: 1px solid var(--border-rigid);
       background: #161616;
     }
-    
+
     header.site-header {
       border-bottom: 1px solid var(--border-rigid);
       padding: 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 1rem;
     }
 
     header.site-header .logo a {
@@ -63,6 +101,7 @@ const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = 
       font-size: 1.1rem;
     }
 
+    nav { display: flex; gap: 1rem; }
     nav a {
       color: var(--text-bone);
       text-decoration: none;
@@ -87,14 +126,17 @@ const { title, description = "IT Infrastructure & Homelab Engineering Logs" } = 
   <div class="container">
     <header class="site-header">
       <div class="logo"><a href="/">OLDWORLD.TECH //</a></div>
-      <nav><a href="/">[LOGS]</a></nav>
+      <nav>
+        <a href="/">[LOGS]</a>
+        <a href="/rss.xml">[RSS]</a>
+      </nav>
     </header>
 
     <main>
       <slot />
     </main>
 
-    <footer><span>SYSTEM: ONLINE // REF_TIME: 2026</span></footer>
+    <footer><span>SYSTEM: ONLINE // BUILD: {buildYear}</span></footer>
   </div>
 </body>
 </html>

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404" description="Resource not found.">
+  <div class="notfound">
+    <h2>404 // RESOURCE NOT FOUND</h2>
+    <p>No log entry exists at this path. It may have been renamed or never published.</p>
+    <p><a href="/">Return to index</a></p>
+  </div>
+</BaseLayout>
+
+<style>
+  .notfound h2 {
+    color: var(--accent-amber);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .notfound p {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: #999;
+    margin-bottom: 0.75rem;
+  }
+  .notfound a { color: var(--accent-green); }
+</style>
